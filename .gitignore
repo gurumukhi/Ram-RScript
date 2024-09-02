@@ -1,4 +1,46 @@
+# RStudio files
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Rproj.user/
+
+# R Markdown files output
+*.pdf
+*.html
+*.docx
+*.tex
+*.log
+
+# Compiled files
+*.o
+*.a
+*.so
+*.dll
+*.dSYM/
+*.rbin
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Cache files
+.Rproj.user/
+.DS_Store
+
+# Data files
+data/
+
+# Specific files to ignore
+*.Rhistory
+*.Rapp.history
+
+# Renviron and renv files (if not used for version control)
+renv/
+renv.lock
 .Rproj.user
 .Rhistory
 .RData
+
 .Ruserdata
