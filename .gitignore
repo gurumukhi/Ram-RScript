@@ -6,9 +6,6 @@
 .Rproj.user/
 
 # R Markdown files output
-*.pdf
-*.html
-*.docx
 *.tex
 *.log
 
@@ -30,7 +27,6 @@
 .DS_Store
 
 # Data files
-data/
 
 # Specific files to ignore
 *.Rhistory
