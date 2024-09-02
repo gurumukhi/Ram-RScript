@@ -1,0 +1,140 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Hyderabad Annual Tree Survey Report},
+  pdfauthor={Ram Dayal Vaishnav},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Hyderabad Annual Tree Survey Report}
+\author{Ram Dayal Vaishnav}
+\date{2024-09-03}
+
+\begin{document}
+\maketitle
+
+\subsection{Hyderabad Annual Tree Survey
+Report}\label{hyderabad-annual-tree-survey-report}
+
+With rapid urbanization transforming Indian cities, understanding and
+preserving urban biodiversity is crucial. The Hyderabad Annual Tree
+Survey leverages citizen science to document and conserve the city's
+flora and fauna.
+
+Methodologically, the survey employed a custom web app and iNaturalist
+for data collection. Volunteers, organized into teams, surveyed both
+avenue and non-avenue locations, recording detailed information on tree
+species, diameter, and related observations, alongside animal counts and
+activities.
+
+A pilot survey refined these methods, leading to a comprehensive survey
+of over 750 trees and 120 species across Hyderabad. This initiative
+provides essential insights into species distribution and the impacts of
+urbanization on biodiversity, guiding future conservation efforts.
+
+\subsection{Data Analysis}\label{data-analysis}
+
+\subsubsection{Tree Species and
+Observations}\label{tree-species-and-observations}
+
+The survey covered over 750 trees, identifying 120 species. Key findings
+include:
+
+\includegraphics[width=0.6\linewidth]{Report_files/figure-latex/unnamed-chunk-2-1}
+
+\includegraphics[width=0.6\linewidth]{Report_files/figure-latex/unnamed-chunk-4-1}
+
+\includegraphics[width=0.6\linewidth]{Report_files/figure-latex/unnamed-chunk-6-1}
+
+\includegraphics[width=0.6\linewidth]{Report_files/figure-latex/unnamed-chunk-8-1}
+
+\includegraphics[width=0.6\linewidth]{Report_files/figure-latex/unnamed-chunk-10-1}
+
+\subsection{Recommendations}\label{recommendations}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Prioritize Native Species:} Native Indian trees support
+  significantly more biodiversity compared to introduced species.
+\item
+  \textbf{Enhance Urban Green Spaces:} Avenue trees play a crucial role
+  in supporting urban wildlife.
+\item
+  \textbf{Improve Air Quality:} Higher air quality correlates with
+  greater biodiversity.
+\end{enumerate}
+
+\subsection{Conclusion}\label{conclusion}
+
+The Hyderabad Annual Tree Survey underscores the value of citizen
+science in urban biodiversity research. Future surveys should address
+vehicle density, human activity, and seasonal variations to further
+understand urban ecosystems.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{References:} - \hyperref[]{HAT Survey iNaturalist Project}
+
+\end{document}
