@@ -27,6 +27,7 @@
 .DS_Store
 
 # Data files
+data/
 
 # Specific files to ignore
 *.Rhistory
