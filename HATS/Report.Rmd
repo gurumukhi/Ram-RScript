@@ -1,0 +1,280 @@
+---
+title: "Hyderabad Annual Tree Survey Report"
+author: "Ram Dayal Vaishnav"
+date: "`r Sys.Date()`"
+output: html_document
+#output: pdf_document
+---
+
+## Hyderabad Annual Tree Survey Report
+
+With rapid urbanization transforming Indian cities, understanding and preserving urban biodiversity is crucial. The Hyderabad Annual Tree Survey leverages citizen science to document and conserve the city's flora and fauna.
+
+Methodologically, the survey employed a custom web app and iNaturalist for data collection. Volunteers, organized into teams, surveyed both avenue and non-avenue locations, recording detailed information on tree species, diameter, and related observations, alongside animal counts and activities.
+
+A pilot survey refined these methods, leading to a comprehensive survey of over 750 trees and 120 species across Hyderabad. This initiative provides essential insights into species distribution and the impacts of urbanization on biodiversity, guiding future conservation efforts.
+
+## Data Analysis
+
+### Tree Species and Observations
+
+The survey covered over 750 trees, identifying 120 species. Key findings include:
+
+```{r include=F}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+treeData  <- read.csv("data/TreeData.csv")
+
+# Assuming treeData is your data frame
+tree_counts <- treeData %>%
+  group_by(TreeSpeciesName) %>%
+  summarize(TreeCount = n()) %>%
+  arrange(desc(TreeCount))
+
+# Remove the "Unidentified / Other" entry
+filtered_tree_counts <- tree_counts %>%
+  filter(TreeSpeciesName != "Unidentified / Other")
+
+# Get the top 10 species after removing "Unidentified / Other"
+top_10_filtered_tree_counts <- filtered_tree_counts %>%
+  top_n(10, wt = TreeCount)
+```
+
+```{r out.width="60%", echo=F}
+# Create the bar chart
+ggplot(top_10_filtered_tree_counts, aes(x = reorder(TreeSpeciesName, TreeCount), y = TreeCount)) +
+  geom_bar(stat = "identity", fill = "lightgreen") +
+  coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Top 10 Tree Species by Count",
+       x = "",
+       y = "") +
+  theme_minimal()
+
+```
+
+```{r include=F}
+nativeness <- filtered_tree_counts %>%
+  left_join(treeData %>% select(TreeSpeciesName, Nativeness) %>% distinct(), by = "TreeSpeciesName")
+
+# Summarize the data by Nativeness
+nativeness_summary <- nativeness %>%
+  group_by(Nativeness) %>%
+  summarize(
+    TotalTreeCount = sum(TreeCount),
+    SpeciesCount = n(),
+    ExampleSpecies = paste(unique(TreeSpeciesName), collapse = ", ")
+  ) %>%
+  arrange(desc(TotalTreeCount))
+
+# Print the summarized data nicely
+print(nativeness_summary)
+```
+
+```{r out.width="60%", echo=F}
+# Create a bar chart to display the total tree count by nativeness with species names
+ggplot(nativeness_summary, aes(x = reorder(Nativeness, SpeciesCount), y = SpeciesCount, fill = Nativeness)) +
+  geom_bar(stat = "identity") +
+  #geom_text(aes(label = ExampleSpecies),nudge_x = -0.2, hjust = 0.1, size = 3.5, color = "black") +  # Add species names
+  #coord_flip() +  # Flip coordinates for better readability
+  labs(title = "Species by Nativeness",
+       x = "Nativeness",
+       y = "Species Count") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set3")  + # Optional: use a color palette for better visualization
+  theme(legend.position = "none")  # Remove the legend
+
+
+```
+
+```{r include=F}
+# install.packages("tidyverse")
+# install.packages("patchwork")
+
+library(patchwork)
+library(tidyverse)
+library(dplyr)
+
+treeData  <- read.csv("data/TreeData.csv")
+animalData <- read.csv("data/AnimalData.csv")
+treeAnimalData  <- read.csv("data/TreeAnimalData.csv")
+
+colnames(treeAnimalData)
+colnames(treeData)
+
+identified_significant_tree_counts <- treeData %>%
+  group_by(TreeSpeciesName) %>%
+  summarize(TreeCount = n()) %>%
+  arrange(desc(TreeCount)) %>%
+  filter(TreeSpeciesName != "Unidentified / Other" & TreeCount > 5) 
+
+nativeness_summary_significant <- identified_significant_tree_counts%>%
+  left_join(treeData %>% select(TreeSpeciesName, Nativeness) %>% distinct(), by = "TreeSpeciesName") %>%
+  group_by(Nativeness) %>%
+  summarize(SpeciesCount = n(), AllTreesCount = sum(TreeCount)) %>%
+  # Add a total row
+  bind_rows(
+    tibble(
+      Nativeness = "Grand Total",
+      SpeciesCount = sum(.$SpeciesCount),
+      AllTreesCount = sum(.$AllTreesCount)
+    )
+  )
+
+nativeness_summary_significant
+
+# Nativeness-Animal Relation ####
+
+# Filter treeAnimalData to include only significant tree species and join with tree counts
+animal_summary_table <- treeAnimalData %>%
+  filter(TreeSpeciesName %in% identified_significant_tree_counts$TreeSpeciesName) %>%
+  group_by(Nativeness) %>%
+  summarize(
+    SUM_TotalAnimals = sum(AnimalCount, na.rm = TRUE),
+  ) %>%
+  # Add a total row
+  bind_rows(
+    tibble(
+      Nativeness = "Grand Total",
+      SUM_TotalAnimals = sum(.$SUM_TotalAnimals)
+    )
+  )
+
+animal_summary_table
+
+combined_summary <- nativeness_summary_significant %>%
+  left_join(animal_summary_table, by = "Nativeness") %>%
+  mutate(
+    AVG_AnimalsPerTree = ifelse(AllTreesCount > 0, SUM_TotalAnimals / AllTreesCount, NA)  # Calculate average animals per tree
+  )
+
+# View the combined summary
+print(combined_summary)
+
+
+
+
+# Create a data frame for plotting to handle both TreeCount and TotalAnimals together
+plot_data <- combined_summary %>%
+  select(Nativeness, AllTreesCount, SUM_TotalAnimals, AVG_AnimalsPerTree) %>%
+  pivot_longer(cols = c(AllTreesCount, SUM_TotalAnimals, AVG_AnimalsPerTree),
+               names_to = "Metric",
+               values_to = "Value")
+
+# Plot Tree Count and Total Animals using bar chart
+tree_animals_plot <- ggplot(plot_data %>% filter(Metric != "AVG_AnimalsPerTree"),
+                            aes(x = Nativeness, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Tree Count and Total Animals by Nativeness",
+       x = "Nativeness",
+       y = "Count",
+       fill = "Metric") +
+  theme_minimal() +
+  coord_flip() +
+  scale_fill_manual(values = c("AllTreesCount" = "#4CAF50", "SUM_TotalAnimals" = "orange"),
+                    labels = c("Trees", "Animals"))  # Custom labels
+
+# Plot Average Animals per Tree using line plot
+avg_animals_plot <- ggplot(plot_data %>% filter(Metric == "AVG_AnimalsPerTree"),
+                           aes(x = Nativeness, y = Value, group = 1)) +
+  geom_line(color = "purple") +
+  geom_point(color = "purple") +
+  labs(title = "Average Animals per Tree by Nativeness",
+       x = "Nativeness",
+       y = "Average Animals per Tree") +
+  theme_minimal() +
+  coord_flip()
+
+# Combine plots
+combined_plot <- tree_animals_plot / avg_animals_plot
+```
+
+```{r out.width="60%", echo=F}
+# Display the combined plot
+print(combined_plot)
+```
+
+```{r include=F}
+# Data for Avenue vs. Non-Avenue Trees
+avenue_non_avenue_data <- data.frame(
+  Type = c("Avenue Trees", "Non-Avenue Trees"),
+  PercentageTreeCount = c(52.32, 41.04),
+  PercentageAnimals = c(70.39, 26.99),
+  AvgAnimalsPerTree = c(10.8, 5.3)
+)
+library(ggplot2)
+library(tidyr)
+
+# Reshape the data for plotting
+avenue_non_avenue_long <- avenue_non_avenue_data %>%
+  pivot_longer(cols = c(PercentageTreeCount, PercentageAnimals, AvgAnimalsPerTree),
+               names_to = "Metric",
+               values_to = "Value")
+
+# Plot Avenue vs. Non-Avenue Trees
+avenue_non_avenue_plot <- ggplot(avenue_non_avenue_long, aes(x = Type, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Avenue vs. Non-Avenue Trees",
+       x = "Tree Type",
+       y = "Value",
+       fill = "Metric") +
+  theme_minimal() +
+  scale_fill_manual(values = c("PercentageTreeCount" = "#1f77b4", 
+                               "PercentageAnimals" = "#ff7f0e",
+                               "AvgAnimalsPerTree" = "#2ca02c"),
+                    labels = c("Percentage of Tree Count", "Percentage of Animals", "Avg. Animals per Tree"))
+
+
+```
+
+```{r out.width="60%", echo=F}
+
+print(avenue_non_avenue_plot)
+
+```
+
+```{r include=F}
+treeData  <- read.csv("data/TreeData.csv")
+animalData <- read.csv("data/AnimalData.csv")
+treeAnimalData  <- read.csv("data/TreeAnimalData.csv")
+
+aqi_summary <- treeAnimalData %>%
+  filter(AQI != '-') %>%
+  group_by(AQI) %>%
+  summarize(
+    Total_Trees = n(),
+    Total_Animals = sum(AnimalCount, na.rm = TRUE),
+    Average_Animals_Per_Tree = mean(AnimalCount, na.rm = TRUE)
+  )
+
+library(ggplot2)
+```
+
+```{r out.width="60%", echo=F}
+
+# Plot the summary statistics
+ggplot(aqi_summary, aes(x = factor(AQI, levels = rev(unique(AQI))), y = Average_Animals_Per_Tree, fill = AQI)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Impact of AQI on Average Animals per Tree",
+       x = "AQI Category",
+       y = "Average Animals per Tree") +
+  theme_minimal() + 
+  theme(legend.position = 'none')
+
+
+```
+
+## Recommendations
+
+1.  **Prioritize Native Species:** Native Indian trees support significantly more biodiversity compared to introduced species.
+2.  **Enhance Urban Green Spaces:** Avenue trees play a crucial role in supporting urban wildlife.
+3.  **Improve Air Quality:** Higher air quality correlates with greater biodiversity.
+
+## Conclusion
+
+The Hyderabad Annual Tree Survey underscores the value of citizen science in urban biodiversity research. Future surveys should address vehicle density, human activity, and seasonal variations to further understand urban ecosystems.
+
+------------------------------------------------------------------------
+
+**References:** - [HAT Survey iNaturalist Project](#)

@@ -1,0 +1,8 @@
+# Challenge: Import a JSON file
+# Difficulty: 2
+
+# retrieve the most current water level from the USGS API
+# error trap the retrieval
+# extract both the level and date from results
+
+bullrunURL <- "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=14138850&parameterCd=00060,00065&siteStatus=all"
