@@ -1,0 +1,14 @@
+1. Read data from 2021-occurrence.csv, 2022-occurrence.csv, 2023-occurrence.csv
+2. Keep only these columns
+      individualCount
+      eventDate
+      stateProvince
+      county
+      locality
+      decimalLatitude
+      decimalLongitude
+      scientificName
+      verbatimScientificName
+      vernacularName
+3. For each year, filter and keep only eBird data by applying 'datasetKey' = 4fa7b334-ce0d-4e88-aaae-2e0c138d049e
+4. Create a table showing sum of individualCount for each vernacularName for each year
