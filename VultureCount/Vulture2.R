@@ -69,20 +69,6 @@ final_summary_with_common_names
 
 colnames(final_summary_with_common_names)
 
-final_summary_long <- final_summary_with_common_names %>%
-  pivot_longer(cols = starts_with("count_"), names_to = "year", values_to = "count") %>%
-  mutate(year = factor(year, levels = c("count_2021", "count_2022", "count_2023"),
-                       labels = c("2021", "2022", "2023")))
-
-# Create a bar plot
-ggplot(final_summary_long, aes(x = commonName, y = count, fill = year)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "WWF-India Vulture Count Data (Yearly comparison between species).       Source: GBIF eBird Dataset",
-       x = "Common Name",
-       y = "Count",
-       fill = "Year") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
+write.csv(final_summary_with_common_names, file = "vulture_count_simplified.csv", row.names = FALSE)
 
 
