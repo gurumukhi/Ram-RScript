@@ -5,7 +5,7 @@ library(readr)
 # Function to process each year's data
 process_year_data <- function(file_path, year, startDate, endDate) {
   data <- read_delim(file_path, delim = "\t")
-
+  
   # Keep only the required columns
   data_filtered <- data %>%
     select(individualCount, eventDate, stateProvince, locality, 
@@ -16,22 +16,8 @@ process_year_data <- function(file_path, year, startDate, endDate) {
   data_ebird <- data_filtered %>%
     filter(datasetKey == "4fa7b334-ce0d-4e88-aaae-2e0c138d049e")
   
-  # Sum individualCount by scientificName
-  summary_table <- data_ebird %>%
-    group_by(scientificName) %>%
-    summarise(total_individualCount = sum(individualCount, na.rm = TRUE)) %>%
-    mutate(year = year)
   
-  summary_table
-  
-  if(year==2021) {
-    summary_table <- summary_table %>%
-      mutate(total_individualCount = round(as.numeric(total_individualCount)/3))
-    
-    summary_table
-  }
-  
-  return(summary_table)
+  return(data_ebird)
 }
 
 # Process data for each year
@@ -43,29 +29,11 @@ data_2021
 data_2022
 data_2023
 
-data_2021 <- data_2021 %>%
-  mutate(count_2021 = total_individualCount) %>%
-  select(-year, -total_individualCount)
-
-data_2022 <- data_2022 %>%
-  mutate(count_2022 = total_individualCount) %>%
-  select(-year, -total_individualCount)
-
-data_2023 <- data_2023 %>%
-  mutate(count_2023 = total_individualCount) %>%
-  select(-year, -total_individualCount)
-
-
-data_2021
-data_2022
-data_2023
 
 # Combine all years into one table
 #final_summary <- bind_rows(data_2021, data_2022, data_2023)
 
-final_summary <- data_2021 %>%
-  full_join(data_2022, by = "scientificName") %>%
-  full_join(data_2023, by = "scientificName")
+final_summary <- bind_rows(data_2021, data_2022, data_2023)
 
 common_names <- tibble(
   scientificName = c(
@@ -94,8 +62,7 @@ common_names <- tibble(
 
 # Merge the common names with the final summary table
 final_summary_with_common_names <- final_summary %>%
-  left_join(common_names, by = "scientificName") %>%
-  select(-scientificName, commonName, count_2021, count_2022, count_2023)
+  left_join(common_names, by = "scientificName")
 
 
 final_summary_with_common_names
@@ -116,3 +83,6 @@ ggplot(final_summary_long, aes(x = commonName, y = count, fill = year)) +
        fill = "Year") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
