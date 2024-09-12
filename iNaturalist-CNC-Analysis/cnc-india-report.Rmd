@@ -1,0 +1,82 @@
+---
+title: "City Nature Challenge: Global vs India Data Analysis"
+author: "Ram Dayal Vaishnav"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Introduction
+
+This report summarizes the key data trends from the City Nature Challenge (CNC) from both global and Indian perspectives. We examine global observations, species, participants, and cities involved, along with a breakdown of India's contribution to these statistics.
+
+```{r setup, include=FALSE}
+# Load required packages
+library(ggplot2)
+library(readr)
+library(dplyr)
+library(scales)
+
+# Load the CSV data
+data <- read_csv("../iNaturalist-CNC-Analysis/cnc_data.csv")
+
+# Data cleaning and type conversion
+data <- data %>%
+  mutate(Year = as.factor(Year),
+         `Global Observations` = as.numeric(gsub("[^0-9]", "", `Global Observations`)),
+         `Global Species` = as.numeric(gsub("[^0-9]", "", `Global Species`)),
+         `Global Participants` = as.numeric(gsub("[^0-9]", "", `Global Participants`)),
+         `Cities Involved Globally` = as.numeric(gsub("[^0-9]", "", `Cities Involved Globally`)),
+         `India Observations (Official)` = as.numeric(gsub("[^0-9]", "", `India Observations (Official)`)),
+         `India Species (Official)` = as.numeric(gsub("[^0-9]", "", `India Species (Official)`)),
+         `India Observers (Official)` = as.numeric(gsub("[^0-9]", "", `India Observers (Official)`)),
+         `India Cities` = as.numeric(gsub("[^0-9]", "", `India Cities`))
+         )
+```
+
+```{r out.width="60%", echo=F, warning=F}
+
+# Plot for cities comparison
+ggplot(data, aes(x = Year)) +
+  geom_line(aes(y = `Cities Involved Globally`, color = "Global Cities", group = 1), size = 1.2) +
+  geom_line(aes(y = `India Cities`, color = "India Cities", group = 1), size = 1.2) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Number of Cities Involved: Global vs India (2016-2024)",
+       x = "Year",
+       y = "Number of Cities",
+       color = "Metric") +
+  theme_minimal()
+
+
+# Plot for observations comparison
+ggplot(data, aes(x = Year)) +
+  geom_line(aes(y = `Global Observations`, color = "Global Observations", group = 1), size = 1.2) +
+  geom_line(aes(y = `India Observations (Official)`, color = "India Observations", group = 1), size = 1.2) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Number of Observations: Global vs India (2016-2024)",
+       x = "Year",
+       y = "Number of Observations",
+       color = "Metric") +
+  theme_minimal()
+
+# Plot for species comparison
+ggplot(data, aes(x = Year)) +
+  geom_line(aes(y = `Global Species`, color = "Global Species", group = 1), size = 1.2) +
+  geom_line(aes(y = `India Species (Official)`, color = "India Species", group = 1), size = 1.2) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Number of Species: Global vs India (2016-2024)",
+       x = "Year",
+       y = "Number of Species",
+       color = "Metric") +
+  theme_minimal()
+
+# Plot for participants comparison
+ggplot(data, aes(x = Year)) +
+  geom_line(aes(y = `Global Participants`, color = "Global Participants", group = 1), size = 1.2) +
+  geom_line(aes(y = `India Observers (Official)`, color = "India Participants", group = 1), size = 1.2) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Number of Participants: Global vs India (2016-2024)",
+       x = "Year",
+       y = "Number of Participants",
+       color = "Metric") +
+  theme_minimal()
+```
