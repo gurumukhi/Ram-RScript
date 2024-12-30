@@ -3,9 +3,9 @@
 library(tidyverse)
 library(dplyr)
 
-locationData <- read.csv("data/LocationData.csv")
-treeData  <- read.csv("data/TreeData.csv")
-treeAnimalData  <- read.csv("data/TreeAnimalData.csv")
+locationData <- read.csv("./HATS/data/LocationData.csv")
+treeData  <- read.csv("./HATS/data/TreeData.csv")
+treeAnimalData  <- read.csv("./HATS/data/TreeAnimalData.csv")
 
 colnames(locationData)
 colnames(treeAnimalData)
@@ -32,9 +32,9 @@ top_10_identified_significant_tree_counts <- identified_significant_tree_counts 
   top_n(10, wt = TreeCount)
 
 ggplot(top_10_identified_significant_tree_counts, aes(x = reorder(TreeSpeciesName, TreeCount), y = TreeCount)) +
-  geom_bar(stat = "identity", fill = "lightgreen") +
+  geom_bar(stat = "identity", fill = "#4682b4") +
   coord_flip() +  # Flip coordinates for better readability
-  labs(title = "Top 10 Tree Species by Count",
+  labs(title = "Top 10 tree species observed",
        x = "",
        y = "") +
   theme_minimal()
